@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # BluetoothCTL Wrapper
 import time
 import pexpect
@@ -53,7 +52,7 @@ class Bluetoothctl:
     def getLogger(self):
         return self.__logger
 
-    def send(self, command, expected:list[str]=[], pause=3):
+    def send(self, command:str, expected:list[str]=[], pause:int=3):
         """ This method is the core of the class. It sends command to the bluetoothctl process and undetand when an answer arrived """
         self.__expected_matched=None
         self.__process.send(f"{command}\n")
@@ -74,7 +73,7 @@ class Bluetoothctl:
             self.__add_output(self.__process.before)
             
     def get_output(self, *args, **kwargs):
-        """Run a command in bluetoothctl prompt, return output as a list of lines."""
+        """ Runs a command in bluetoothctl prompt, return output as a list of lines."""
         try:
             self.send(*args, **kwargs)
         except Exception as e:
@@ -82,14 +81,15 @@ class Bluetoothctl:
         return self.__process.before #self.read_last_output()
     
     def get_last_match(self):
+        """ Gets last string matched the expected output """
         return self.__expected_matched
     
     def set_clean_output(self,clean:bool):
+        """ Sets if outut is cleaned from now or not """
         self.__clean_output=clean
 
-
     def clean_output(self,output:str):
-        """ clean output from "dirty characters" used by console to embellish the output """
+        """ Cleans output from "dirty characters" used by console to embellish the output """
         # crude but effective
         # remove "blue part"
         output=re.compile("\r\n\\x1b\\[\\?2004h\\x1b\\[0;94m\\[[^\\]]+\\]\\x1b\\[0m").sub("",output)
@@ -100,29 +100,27 @@ class Bluetoothctl:
         return self.__output[-1]
 
     def read_full_output(self):
+        """ Returns all output product """
         return self.__output
 
-    def get_last_expected(self):
-        return self.__last_expected
-
     def command_help(self):
-        """Give back help command. Using explained command will guide to write other features wrapped."""
+        """ Gives back help command. Using explained command will guide to write other features wrapped."""
         return self.get_output("help")
 
     def command_list(self):
-        """Give back list of connector availables."""
+        """ Gives back list of connector availables."""
         return self.get_output("list")
         
     def command_devices_connected(self):
-        """Give back devices connected."""
+        """ Gives sback devices connected."""
         return self.get_output("devices Connected")
 
     def command_devices_paired(self):
-        """Give back devices paireded."""
+        """ Gives sback devices paired."""
         return self.get_output("devices Paired")
 
     def command_pair_device(self,dev_mac:str):
-        """Unpair device with specific mac address. Returning true if device was paired, false if device was unpaired"""
+        """ Unpairs device with specific mac address. Returning true if device is paired, false if not"""
         expected=["Pairing successful","Device %s not available" % dev_mac]
         out=self.get_output("pair %s" % dev_mac,expected)
         if re.search(expected[0],out):
@@ -131,7 +129,7 @@ class Bluetoothctl:
             return False
 
     def command_trust_device(self,dev_mac:str):
-        """Unpair device with specific mac address. Returning true if device was paired, false if device was unpaired"""
+        """ Trusts device with specific mac address. Returning true if device is trusted, false if not"""
         expected=["Device has been removed","Device %s not available" % dev_mac]
         out=self.get_output("remove %s" % dev_mac,expected)
         if re.search(expected[0],out):
@@ -140,7 +138,7 @@ class Bluetoothctl:
             return False    
             
     def command_connect_device(self,dev_mac:str):
-        """Unpair device with specific mac address. Returning true if device was paired, false if device was unpaired"""
+        """ Connects device with specific mac address. Returning true if device is connected, false if not"""
         expected=["Connection successful","Device %s not available" % dev_mac]
         out=self.get_output("connect %s" % dev_mac,expected)
         if re.search(expected[0],out):
@@ -149,7 +147,7 @@ class Bluetoothctl:
             return False
             
     def command_disconnect_device(self,dev_mac:str):
-        """Unpair device with specific mac address. Returning true if device was paired, false if device was unpaired"""
+        """ Removes device with specific mac address from list of connected, trusted and paired devices. Returning true if device was disconnected, false if not"""
         expected=["Device has been removed","Device %s not available" % dev_mac]
         out=self.get_output("remove %s" % dev_mac,expected)
         if re.search(expected[0],out):
@@ -158,7 +156,7 @@ class Bluetoothctl:
             return False
 
     def command_scan_on(self,dev_mac:str):
-        """ Start scanning """
+        """ Start scanning and searching for specific mac address"""
         expected=[dev_mac,"Discovery started"]
         out=self.get_output("scan on",expected,5)
         if(re.search(expected[0],out) or re.search(expected[1],out)):
