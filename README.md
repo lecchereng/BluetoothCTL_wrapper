@@ -47,4 +47,4 @@ To test it try:
 ```
 using the mac_address of your devices. You can see it using the command_device_paired method which shows precisely the list of connected deivces.
 ## Improve the features
-Improve the other features of bluetoothctl shall be quite simple. You just need to keep the example of the implemented methods. You can also change something using the name of device istead of the mac_address in searching mode but as for bluetoothctl tool you need the mac_address to connect to.
+Improve the other features of bluetoothctl shall be quite simple. You just need to keep the example of the implemented methods. You can also change something using the name of device istead of the mac_address in searching mode but as for bluetoothctl tool you need the mac_address to manage it.
